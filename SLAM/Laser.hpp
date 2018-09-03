@@ -37,12 +37,6 @@ struct Laser {
 	long x, y;
 };
 
-// Mobile Robot Position
-struct Position {
-	long x = 0, y = 0, theta = 0;
-} Position;
-
-int map[300][300] = { 0, };
 
 union RGB {
 	unsigned char r;

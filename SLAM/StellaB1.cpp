@@ -34,7 +34,7 @@ bool CStellaB1::Velocity (int leftMotor, int rightMotor)
 	rightMotor = bound (rightMotor, -999, 999);
 
 	unsigned char leftSign = (leftMotor >= 0) ? 'F' : 'B';
-	unsigned char rightSign = (leftMotor >= 0) ? 'F' : 'B';
+	unsigned char rightSign = (rightMotor >= 0) ? 'F' : 'B';
 
 	leftMotor = abs(leftMotor);
 	rightMotor = abs(rightMotor);

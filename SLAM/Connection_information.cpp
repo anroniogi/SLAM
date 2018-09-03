@@ -30,7 +30,7 @@ struct Connection_information::pImpl
 		}
 		else {
 #if defined(QRK_WINDOWS_OS)
-			device_or_ip_name_ = "COM5";
+			device_or_ip_name_ = "COM4";
 #elif defined(QRK_LINUX_OS)
 			device_or_ip_name_ = "/dev/ttyACM0";
 #else

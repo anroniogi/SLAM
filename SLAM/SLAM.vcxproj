@@ -35,10 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Connection_information.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SLAM_main.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="StellaB1.cpp" />
-    <ClCompile Include="StellaB1_main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1C01ABA8-3C5C-467A-A2F8-F74A21847A34}</ProjectGuid>
@@ -107,10 +106,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\소유자\Desktop\SLAM\urg_library-1.2.3\urg_library-1.2.3\vs2015\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)SLAM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>urg_cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\소유자\Desktop\SLAM\SLAM\SLAM\lib;$(SolutionDir)SLAM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Users\소유자\Desktop\SLAM\SLAM\SLAM\lib\urg_cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
