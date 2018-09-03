@@ -101,23 +101,23 @@ namespace
 			laser[cnt].y = y+4000;
 			
 			
-			//mobile robot의 Position x, y만큼 장애물위치 이동
-			tempx = floor((x + Position.x) / 50);
-			tempy = floor((y+4000 + Position.y) / 50);
+			////mobile robot의 Position x, y만큼 장애물위치 이동
+			//tempx = floor((x + Position.x) / 50);
+			//tempy = floor((y+4000 + Position.y) / 50);
 
-			//mobile robot의 theta만큼 장애물위치 회전
-			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
-			tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
-			
+			////mobile robot의 theta만큼 장애물위치 회전
+			//tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
+			//tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
+			//
 			
 			// 배열에 대입
-			map[tempx][tempy] += 1;
+//			map[tempx][tempy] += 1;
 
 			++cnt;
 		}
 		cout << endl;
 		
-		for (int i = 0; i < height; i++) {
+	/*	for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++)	{
 				if (map[i][j] == 0) {
 					fwrite(white, sizeof(unsigned char), 3, pfile);
@@ -127,7 +127,7 @@ namespace
 		}
 
 		fclose(pfile);
-		
+		*/
 #endif
 	}
 }

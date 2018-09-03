@@ -24,10 +24,12 @@ using namespace std;
 
 // Mobile Robot Position
 struct Position {
-	long x = 0, y = 0, theta = 0;
+	float x = 0, y = 0, theta = 0;
 };
 
 int map[300][300] = { 0, };
+
+
 
 int main(int argc, char *argv[])
 {
@@ -40,6 +42,8 @@ int main(int argc, char *argv[])
 	_rc->SetTimeout(100, 100, 10);
 
 	CStellaB1 *_sg = new CStellaB1(_rc);
+	//SLAM 변수
+	Position CurrentPosition;
 
 	//SLAM변수
 
@@ -91,7 +95,20 @@ int main(int argc, char *argv[])
 
 
 	//Stella 이동
-	_sg->Velocity(40, 40);
+	_sg->Init();
+	_sg->Reset();
+
+
+	_sg->Run();
+	Sleep(2000);
+	printf("check %d", urg.max_distance());
+	_sg->TurnLeft();
+	Sleep(2000);
+
+	_sg->Stop(2);
+	_sg->GetPosition(&CurrentPosition.x, &CurrentPosition.y);
+	printf("check a : %f b : %f", CurrentPosition.x, CurrentPosition.y);
+
 
 
 	//for (int i = 0; i < Capture_times; ++i) {
@@ -118,10 +135,6 @@ int main(int argc, char *argv[])
 				_sg->GetState(&state);
 				_sg->GetPosition(&left, &right);
 
-
-				//// meter단위를 cm단위로 변환
-				//left *= 1000;
-				//right *= 1000;
 
 
 				//data 출력(bmp파일로 출력)

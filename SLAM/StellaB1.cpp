@@ -109,6 +109,8 @@ bool CStellaB1::GetPosition (float *leftMotor, float *rightMotor)
 	if (n_res == sizeof(res) && res[0] == STX && res[15] == ETX) {
 		*leftMotor = (float)atof ((char *)&res[2]);
 		*rightMotor = (float)atof ((char *)&res[9]);
+		*leftMotor = *leftMotor / 100;
+		*rightMotor = *rightMotor / 100;
 		if (res[1] == 'B') *leftMotor = -*leftMotor;
 		if (res[8] == 'B') *rightMotor = -*rightMotor;
 		return true;
@@ -198,4 +200,36 @@ int CStellaB1::FindAndMove (unsigned char *response, int n, unsigned char comman
 	// response 안에 command가 없다.
 	// 받은 데이터를 모두 무시한다.
 	return 0;
+}
+
+bool CStellaB1::Run()
+{
+	unsigned char cmd[] = { STX,
+		'C', 'P', 'A',
+		'R',
+		'0','0','0',
+		'D','F',
+		'1',
+		'0',
+		'0',
+		'T','0','0','3',ETX
+	};
+	WritePacket(cmd, sizeof(cmd));
+	return true;
+}
+
+
+bool CStellaB1::TurnLeft()
+{
+	unsigned char cmd_left[] = { STX,
+		'C', 'P', 'A',//공통
+		'L',//왼쪽 오른쪽
+		'0','9','0', //회전각도
+		'D','F',//상관없음
+		'0','0','0',// 이동거리
+		'T','0','0','2',// 이동시간
+		ETX
+	};
+	WritePacket(cmd_left, sizeof(cmd_left));
+	return true;
 }
