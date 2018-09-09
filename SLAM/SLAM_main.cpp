@@ -11,6 +11,7 @@ $Id$
 #include "stdafx.h"
 #include "SerialPort.h"
 #include "StellaB1.h"
+#include <stdio.h>
 #include <windows.h>
 #include <math.h>
 
@@ -23,11 +24,11 @@ using namespace std;
 #pragma warning (disable : 4996)
 
 // Mobile Robot Position
-struct Position {
-	long x = 0, y = 0, theta = 0;
-};
+//struct Position {
+//	long x = 0, y = 0, theta = 0;
+//}Position;
 
-int map[300][300] = { 0, };
+//int map[300][300] = { 0, };
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
 
 	//SLAM변수
 
-	Position Position;
+	//Position Position;
 
 	// 레이저 변수
 	char name[80] = "";
@@ -68,11 +69,11 @@ int main(int argc, char *argv[])
 		Sleep(10000);
 		return 1;
 	}
-	// Stella 이니셜라이즈
+	//// Stella 이니셜라이즈
 	_sg->Init();
 	_sg->Reset();
 
-	//Stella 상태와 위치값 받아옴
+	////Stella 상태와 위치값 받아옴
 	_sg->GetState(&state);
 	_sg->GetPosition(&left, &right);
 	cout << "Urg_driver::get_distance(): " << _sg->GetState(&state) << endl;
@@ -89,17 +90,11 @@ int main(int argc, char *argv[])
 	std::ofstream PositionFile("position.txt");	// 측정값 파일출력용
 
 
-
-	//Stella 이동
-	_sg->Velocity(40, 40);
-
-
-	//for (int i = 0; i < Capture_times; ++i) {
-		//while (1) {
 			for (int i = 0; i < 30; ++i) {
+	//while(1){
 				vector<long> data;
 				long time_stamp = 0;
-
+				printf("%f",urg.what);
 				if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
 					cout << "Urg_driver::get_distance(): " << urg.what() << endl;
 					Sleep(10000);
@@ -115,25 +110,21 @@ int main(int argc, char *argv[])
 
 				// Get Mobile Robot Position
 				// data 출력 전 측정
-				_sg->GetState(&state);
-				_sg->GetPosition(&left, &right);
+			//	_sg->GetState(&state);
+			//	_sg->GetPosition(&left, &right);
 
 
-				//// meter단위를 cm단위로 변환
-				//left *= 1000;
-				//right *= 1000;
 
 
 				//data 출력(bmp파일로 출력)
-				//print_data(urg, data, time_stamp, name);
-
+				print_data(urg, data, time_stamp, name);
 				std::cout << "lasersensor 측정 : " << i << std::endl;
 				std::cout << "Position x : " << Position.x << "\nPosition y : " <<
 					Position.y << "\nPosition theta : " << Position.theta << std::endl;
 				Sleep(1000);
 				name[0] = '\0';
 				cout << "\n" << endl;
-				PositionFile << Position.x << " " << Position.y << " " << Position.theta << std::endl;
+//				PositionFile << Position.x << " " << Position.y << " " << Position.theta << std::endl;
 
 
 			}
@@ -149,7 +140,7 @@ int main(int argc, char *argv[])
 			printf("---------------------------------------------------------------------\n");
 
 			//원래대로 복귀, 디버깅용
-			_sg->Velocity(00, 00);
+			//_sg->Velocity(00, 00);
 			urg.close();
 			getchar();
 

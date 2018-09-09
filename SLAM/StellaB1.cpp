@@ -109,6 +109,8 @@ bool CStellaB1::GetPosition (float *leftMotor, float *rightMotor)
 	if (n_res == sizeof(res) && res[0] == STX && res[15] == ETX) {
 		*leftMotor = (float)atof ((char *)&res[2]);
 		*rightMotor = (float)atof ((char *)&res[9]);
+		*leftMotor = *leftMotor / 100;
+		*rightMotor = *rightMotor / 100;
 		if (res[1] == 'B') *leftMotor = -*leftMotor;
 		if (res[8] == 'B') *rightMotor = -*rightMotor;
 		return true;

@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-
 #include <iostream>
 #include <Windows.h>
 #include <stdio.h>
@@ -37,6 +36,12 @@ struct Laser {
 	long x, y;
 };
 
+// Mobile Robot Position
+struct Position {
+	long x = 0, y = 0, theta = 0;
+} Position;
+
+int map[300][300] = { 0, };
 
 union RGB {
 	unsigned char r;
@@ -99,11 +104,11 @@ namespace
 			laser[cnt].num = i;
 			laser[cnt].x = x;
 			laser[cnt].y = y+4000;
-			
+			++cnt;
 			
 			//mobile robot의 Position x, y만큼 장애물위치 이동
-			tempx = floor((x + Position.x) / 50);
-			tempy = floor((y+4000 + Position.y) / 50);
+			tempx = floor(x / 50) + Position.x;
+			tempy = floor((y+4000) / 50) + Position.y;
 
 			//mobile robot의 theta만큼 장애물위치 회전
 			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
@@ -113,7 +118,7 @@ namespace
 			// 배열에 대입
 			map[tempx][tempy] += 1;
 
-			++cnt;
+
 		}
 		cout << endl;
 		
