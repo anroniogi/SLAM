@@ -201,3 +201,35 @@ int CStellaB1::FindAndMove (unsigned char *response, int n, unsigned char comman
 	// 받은 데이터를 모두 무시한다.
 	return 0;
 }
+
+bool CStellaB1::Run()
+{
+	unsigned char cmd[] = { STX,
+		'C', 'P', 'A',
+		'R',
+		'0','0','0',
+		'D','F',
+		'1',
+		'0',
+		'0',
+		'T','0','0','3',ETX
+	};
+	WritePacket(cmd, sizeof(cmd));
+	return true;
+}
+
+
+bool CStellaB1::TurnLeft()
+{
+	unsigned char cmd_left[] = { STX,
+		'C', 'P', 'A',//공통
+		'L',//왼쪽 오른쪽
+		'0','9','0', //회전각도
+		'D','F',//상관없음
+		'0','0','0',// 이동거리
+		'T','0','0','2',// 이동시간
+		ETX
+	};
+	WritePacket(cmd_left, sizeof(cmd_left));
+	return true;
+}

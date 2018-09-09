@@ -24,11 +24,19 @@ using namespace std;
 #pragma warning (disable : 4996)
 
 // Mobile Robot Position
+<<<<<<< HEAD
 //struct Position {
 //	long x = 0, y = 0, theta = 0;
 //}Position;
+=======
+struct Position {
+	float x = 0, y = 0, theta = 0;
+};
+>>>>>>> 0f7d672450b1236b7d39b467e940b8a7078423e5
 
 //int map[300][300] = { 0, };
+
+
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +49,8 @@ int main(int argc, char *argv[])
 	_rc->SetTimeout(100, 100, 10);
 
 	CStellaB1 *_sg = new CStellaB1(_rc);
+	//SLAM 변수
+	Position CurrentPosition;
 
 	//SLAM변수
 
@@ -90,6 +100,29 @@ int main(int argc, char *argv[])
 	std::ofstream PositionFile("position.txt");	// 측정값 파일출력용
 
 
+<<<<<<< HEAD
+=======
+
+	//Stella 이동
+	_sg->Init();
+	_sg->Reset();
+
+
+	_sg->Run();
+	Sleep(2000);
+	printf("check %d", urg.max_distance());
+	_sg->TurnLeft();
+	Sleep(2000);
+
+	_sg->Stop(2);
+	_sg->GetPosition(&CurrentPosition.x, &CurrentPosition.y);
+	printf("check a : %f b : %f", CurrentPosition.x, CurrentPosition.y);
+
+
+
+	//for (int i = 0; i < Capture_times; ++i) {
+		//while (1) {
+>>>>>>> 0f7d672450b1236b7d39b467e940b8a7078423e5
 			for (int i = 0; i < 30; ++i) {
 	//while(1){
 				vector<long> data;
@@ -114,7 +147,10 @@ int main(int argc, char *argv[])
 			//	_sg->GetPosition(&left, &right);
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0f7d672450b1236b7d39b467e940b8a7078423e5
 
 				//data 출력(bmp파일로 출력)
 				print_data(urg, data, time_stamp, name);

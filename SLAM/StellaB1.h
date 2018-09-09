@@ -13,7 +13,8 @@ public:
 	bool Init ();
 	bool GetState (char *state);
 	bool GetPosition (float *leftMotor, float *rightMotor);
-
+	bool Run();
+	bool TurnLeft();
 	const char *GetStateString (char state);
 	const char *GetErrorString (char errorCode);
 
