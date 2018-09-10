@@ -14,6 +14,8 @@ public:
 	bool GetState (char *state);
 	bool GetPosition (float *leftMotor, float *rightMotor);
 
+	bool CStellaB1::Run();
+	bool CStellaB1::TurnLeft();
 	const char *GetStateString (char state);
 	const char *GetErrorString (char errorCode);
 

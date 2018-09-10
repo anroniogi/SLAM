@@ -47,6 +47,7 @@ RGB white[3] = { 255, 255, 255 };
 RGB black[3] = { 0, 0, 0 };
 
 
+int map[300][300] = { 0, };
 struct Laser laser[143];
 
 using namespace qrk;
@@ -61,9 +62,9 @@ namespace
 		// bmp 파일 생성
 		bmpinfoheader[25] = (unsigned char)(resolution);      //horizontal resolutions
 		bmpinfoheader[29] = (unsigned char)(resolution);      //vertical resolutions
+
+
 		//FILE *pfile = fopen("image.bmp", "wb");
-		
-		
 		FILE *pfile = fopen(name, "wb");
 		fwrite(bmpfileheader, 1, 14, pfile);
 		fwrite(bmpinfoheader, 1, 40, pfile);
@@ -82,6 +83,8 @@ namespace
 		long tempx, tempy;
 
 		size_t data_n = data.size();
+
+
 		//상규 수정
 		//int j = floor(data_n / 2);
 		//for(int i=-j; i<j; ++i){
@@ -101,17 +104,17 @@ namespace
 			laser[cnt].y = y+4000;
 			
 			
-			//mobile robot의 Position x, y만큼 장애물위치 이동
-			tempx = floor((x + Position.x) / 50);
-			tempy = floor((y+4000 + Position.y) / 50);
+			////mobile robot의 Position x, y만큼 장애물위치 이동
+			//tempx = floor((x + Position.x) / 50);
+			//tempy = floor((y+4000 + Position.y) / 50);
 
-			//mobile robot의 theta만큼 장애물위치 회전
-			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
-			tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
+			////mobile robot의 theta만큼 장애물위치 회전
+			//tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
+			//tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
 			
 			
 			// 배열에 대입
-			map[tempx][tempy] += 1;
+			//map[tempx][tempy] += 1;
 
 			++cnt;
 		}

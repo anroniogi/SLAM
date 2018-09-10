@@ -8,30 +8,30 @@
 static const unsigned char STX = 0x02;
 static const unsigned char ETX = 0x03;
 
-inline int bound (int v, int lo, int hi)
+inline int bound(int v, int lo, int hi)
 {
 	if (v < lo) return lo;
 	if (v > hi) return hi;
 	return v;
 }
 
-CStellaB1::CStellaB1 (CSerialPort *serial)
-: _serial(serial)
+CStellaB1::CStellaB1(CSerialPort *serial)
+	: _serial(serial)
 {
-	_serial->Flush ();
+	_serial->Flush();
 }
 
-CStellaB1::~CStellaB1 ()
+CStellaB1::~CStellaB1()
 {
 }
 
-bool CStellaB1::Velocity (int leftMotor, int rightMotor)
+bool CStellaB1::Velocity(int leftMotor, int rightMotor)
 {
 	float a, b;
 	a = leftMotor;
 	b = rightMotor;
-	leftMotor = bound (leftMotor, -999, 999);
-	rightMotor = bound (rightMotor, -999, 999);
+	leftMotor = bound(leftMotor, -999, 999);
+	rightMotor = bound(rightMotor, -999, 999);
 
 	unsigned char leftSign = (leftMotor >= 0) ? 'F' : 'B';
 	unsigned char rightSign = (rightMotor >= 0) ? 'F' : 'B';
@@ -39,57 +39,57 @@ bool CStellaB1::Velocity (int leftMotor, int rightMotor)
 	leftMotor = abs(leftMotor);
 	rightMotor = abs(rightMotor);
 
-	unsigned char cmd_left[] = { STX, 
-		'C', 'V', 'L', 
-		leftSign, 
-		(leftMotor/100)%10 + '0', 
-		(leftMotor/10)%10 + '0', 
-		(leftMotor/1)%10 + '0', 
+	unsigned char cmd_left[] = { STX,
+		'C', 'V', 'L',
+		leftSign,
+		(leftMotor / 100) % 10 + '0',
+		(leftMotor / 10) % 10 + '0',
+		(leftMotor / 1) % 10 + '0',
 		ETX };
-	WritePacket (cmd_left, sizeof(cmd_left));
+	WritePacket(cmd_left, sizeof(cmd_left));
 
-	unsigned char cmd_right[] = { STX, 
-		'C', 'V', 'R', 
-		rightSign, 
-		(rightMotor/100)%10 + '0', 
-		(rightMotor/10)%10 + '0', 
-		(rightMotor/1)%10 + '0', 
+	unsigned char cmd_right[] = { STX,
+		'C', 'V', 'R',
+		rightSign,
+		(rightMotor / 100) % 10 + '0',
+		(rightMotor / 10) % 10 + '0',
+		(rightMotor / 1) % 10 + '0',
 		ETX };
-	WritePacket (cmd_right, sizeof(cmd_right));
+	WritePacket(cmd_right, sizeof(cmd_right));
 
 	return true;
 }
 
-bool CStellaB1::Stop (int mode)
+bool CStellaB1::Stop(int mode)
 {
-	assert (mode == 1 || mode == 2 || mode == 3);
+	assert(mode == 1 || mode == 2 || mode == 3);
 
 	unsigned char cmd[] = { STX, 'C', 'S', 'T', 'O', 'P', mode + '0', ETX };
-	WritePacket (cmd, sizeof(cmd));
+	WritePacket(cmd, sizeof(cmd));
 	return true;
 }
 
-bool CStellaB1::Reset ()
+bool CStellaB1::Reset()
 {
 	unsigned char cmd[] = { STX, 'C', 'R', 'E', 'S', 'E', 'T', 'A', ETX };
-	WritePacket (cmd, sizeof(cmd));
+	WritePacket(cmd, sizeof(cmd));
 	return true;
 }
 
-bool CStellaB1::Init ()
+bool CStellaB1::Init()
 {
 	unsigned char cmd[] = { STX, 'C', 'I', 'N', 'I', 'T', ETX };
-	WritePacket (cmd, sizeof(cmd));
+	WritePacket(cmd, sizeof(cmd));
 	return true;
 }
 
-bool CStellaB1::GetState (char *state)
+bool CStellaB1::GetState(char *state)
 {
 	unsigned char cmd[] = { STX, 'G', 'S', 'T', 'A', 'T', 'E', ETX };
-	WritePacket (cmd, sizeof(cmd));
+	WritePacket(cmd, sizeof(cmd));
 
 	unsigned char res[3] = { 0, };
-	int n_res = ReadPacket (res, sizeof(res));
+	int n_res = ReadPacket(res, sizeof(res));
 	if (n_res == sizeof(res) && res[0] == STX && res[2] == ETX) {
 		*state = res[1] - '0';
 		return true;
@@ -99,16 +99,18 @@ bool CStellaB1::GetState (char *state)
 	}
 }
 
-bool CStellaB1::GetPosition (float *leftMotor, float *rightMotor)
+bool CStellaB1::GetPosition(float *leftMotor, float *rightMotor)
 {
 	unsigned char cmd[] = { STX, 'G', 'P', 'O', 'S', 'I', 'T', 'I', 'O', 'N', 'A', ETX };
-	WritePacket (cmd, sizeof(cmd));
+	WritePacket(cmd, sizeof(cmd));
 
 	unsigned char res[16] = { 0, };
-	int n_res = ReadPacket (res, sizeof(res));
+	int n_res = ReadPacket(res, sizeof(res));
 	if (n_res == sizeof(res) && res[0] == STX && res[15] == ETX) {
-		*leftMotor = (float)atof ((char *)&res[2]);
-		*rightMotor = (float)atof ((char *)&res[9]);
+		*leftMotor = (float)atof((char *)&res[2]);
+		*rightMotor = (float)atof((char *)&res[9]);
+		*leftMotor = *leftMotor / 100;
+		*rightMotor = *rightMotor / 100;
 		if (res[1] == 'B') *leftMotor = -*leftMotor;
 		if (res[8] == 'B') *rightMotor = -*rightMotor;
 		return true;
@@ -118,7 +120,7 @@ bool CStellaB1::GetPosition (float *leftMotor, float *rightMotor)
 	}
 }
 
-const char *CStellaB1::GetStateString (char state)
+const char *CStellaB1::GetStateString(char state)
 {
 	switch (state) {
 	case 0: return "정상 상태";
@@ -133,7 +135,7 @@ const char *CStellaB1::GetStateString (char state)
 	}
 }
 
-const char *CStellaB1::GetErrorString (char errorCode)
+const char *CStellaB1::GetErrorString(char errorCode)
 {
 	switch (errorCode) {
 	case  8: return "입력한 위치 지령이 모터 한계 속도값을 넘어서는 명령입니다.";
@@ -146,26 +148,26 @@ const char *CStellaB1::GetErrorString (char errorCode)
 }
 
 
-int CStellaB1::WritePacket (unsigned char *command, int length)
+int CStellaB1::WritePacket(unsigned char *command, int length)
 {
-	for (int i=0; i<length; ++i) {
-		_serial->Write ((char *)&command[i], 1);
-		Sleep (10);
+	for (int i = 0; i < length; ++i) {
+		_serial->Write((char *)&command[i], 1);
+		Sleep(10);
 	}
 	return length;
 }
 
-int CStellaB1::ReadPacket (unsigned char *response, int length, unsigned long timeout)
+int CStellaB1::ReadPacket(unsigned char *response, int length, unsigned long timeout)
 {
 	int n_recv = 0;
 
-	timeout += GetTickCount ();
+	timeout += GetTickCount();
 
 	while (0 < length) {
-		int n = _serial->Read ((char *)response, length);
+		int n = _serial->Read((char *)response, length);
 		if (0 < n) {
 			if (n_recv == 0 && response[0] != STX) {
-				n = FindAndMove (response, n, STX);			
+				n = FindAndMove(response, n, STX);
 			}
 			response += n;
 			length -= n;
@@ -187,15 +189,47 @@ int CStellaB1::ReadPacket (unsigned char *response, int length, unsigned long ti
 	return n_recv;
 }
 
-int CStellaB1::FindAndMove (unsigned char *response, int n, unsigned char command)
+int CStellaB1::FindAndMove(unsigned char *response, int n, unsigned char command)
 {
-	for (int i=0; i<n; ++i) {
+	for (int i = 0; i < n; ++i) {
 		if (response[i] == command) {
-			memmove (&response[0], &response[i], n-i);
-			return n-i;
+			memmove(&response[0], &response[i], n - i);
+			return n - i;
 		}
 	}
 	// response 안에 command가 없다.
 	// 받은 데이터를 모두 무시한다.
 	return 0;
+}
+
+bool CStellaB1::Run()
+{
+	unsigned char cmd[] = { STX,
+		'C', 'P', 'A',
+		'R',
+		'0','0','0',
+		'D','F',
+		'2',
+		'0',
+		'0',
+		'T','0','0','3',ETX
+	};
+	WritePacket(cmd, sizeof(cmd));
+	return true;
+}
+
+
+bool CStellaB1::TurnLeft()
+{
+	unsigned char cmd_left[] = { STX,
+		'C', 'P', 'A',//공통
+		'L',//왼쪽,오른쪽
+		'0','9','0', //회전각도
+		'D','F',//상관없음
+		'0','0','0',// 이동거리
+		'T','0','0','2',// 이동시간
+		ETX
+	};
+	WritePacket(cmd_left, sizeof(cmd_left));
+	return true;
 }

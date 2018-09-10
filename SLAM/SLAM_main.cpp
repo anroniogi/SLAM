@@ -27,7 +27,6 @@ struct Position {
 	long x = 0, y = 0, theta = 0;
 };
 
-int map[300][300] = { 0, };
 
 int main(int argc, char *argv[])
 {
@@ -72,11 +71,6 @@ int main(int argc, char *argv[])
 	_sg->Init();
 	_sg->Reset();
 
-	//Stella 상태와 위치값 받아옴
-	_sg->GetState(&state);
-	_sg->GetPosition(&left, &right);
-	cout << "Urg_driver::get_distance(): " << _sg->GetState(&state) << endl;
-
 	// Gets measurement data
 #if 1
 	// Case where the measurement range (start/end steps) is defined
@@ -90,16 +84,23 @@ int main(int argc, char *argv[])
 
 
 
-	//Stella 이동
-	_sg->Velocity(40, 40);
-
-
 	//for (int i = 0; i < Capture_times; ++i) {
 		//while (1) {
-			for (int i = 0; i < 30; ++i) {
+			for (int i = 0; i < 300; ++i) {
+
+
+				//Stella 이동
+				_sg->Run();
+
+				
+				//_sg->TurnLeft();
+
+				Sleep(1000);
+				//_sg->Reset();
+
 				vector<long> data;
 				long time_stamp = 0;
-
+				printf("check\n");
 				if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
 					cout << "Urg_driver::get_distance(): " << urg.what() << endl;
 					Sleep(10000);
@@ -113,15 +114,15 @@ int main(int argc, char *argv[])
 				strcat(name, buffer);
 				strcat(name, bmp);
 
+				//Stella 상태와 위치값 받아옴
+				_sg->GetState(&state);
+				_sg->GetPosition(&left, &right);
+				cout << "Urg_driver::get_distance(): " << _sg->GetState(&state) << endl;
+
 				// Get Mobile Robot Position
 				// data 출력 전 측정
 				_sg->GetState(&state);
 				_sg->GetPosition(&left, &right);
-
-
-				//// meter단위를 cm단위로 변환
-				//left *= 1000;
-				//right *= 1000;
 
 
 				//data 출력(bmp파일로 출력)
