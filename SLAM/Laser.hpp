@@ -14,6 +14,8 @@
 #include "Connection_information.h"
 #include "math_utilities.h"
 
+#include <glut.h>
+
 /**
 * BMP파일 생성을 위한 선언들...
 *
@@ -42,7 +44,9 @@ struct Position {
 	long x = 0, y = 0, theta = 0;
 } Position;
 
-int map[300][300] = { 0, };
+namespace MAP {
+	int map[300][300] = { 0, };
+}
 
 union RGB {
 	unsigned char r;
@@ -67,13 +71,13 @@ namespace
 		// bmp 파일 생성
 		bmpinfoheader[25] = (unsigned char)(resolution);      //horizontal resolutions
 		bmpinfoheader[29] = (unsigned char)(resolution);      //vertical resolutions
-		//FILE *pfile = fopen("image.bmp", "wb");
-		
-		
+															  //FILE *pfile = fopen("image.bmp", "wb");
+
+
 		FILE *pfile = fopen(name, "wb");
 		fwrite(bmpfileheader, 1, 14, pfile);
 		fwrite(bmpinfoheader, 1, 40, pfile);
-		
+
 
 #if 0
 		// Shows only the front step
@@ -101,31 +105,31 @@ namespace
 			long x = static_cast<long>(l * cos(radian));
 			long y = static_cast<long>(l * sin(radian));
 			cout << i << " : (" << x << ", " << y << ")" << endl;
-			
+
 			laser[cnt].num = i;
 			laser[cnt].x = x;
-			laser[cnt].y = y+4000;
-			
-			
+			laser[cnt].y = y + 4000;
+			++cnt;
+
 			//mobile robot의 Position x, y만큼 장애물위치 이동
-			tempx = floor((x + Position.x) / 50);
-			tempy = floor((y+4000 + Position.y) / 50);
+			tempx = floor(x / 50) + Position.x;
+			tempy = floor((y + 4000) / 50) + Position.y;
 
 			//mobile robot의 theta만큼 장애물위치 회전
 			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
 			tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
-			
-			
-			// 배열에 대입
-			map[tempx][tempy] += 1;
 
-			++cnt;
+
+			// 배열에 대입
+			MAP::map[tempx][tempy] += 1;
+
+
 		}
 		cout << endl;
-		
+
 		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++)	{
-				if (map[i][j] == 0) {
+			for (int j = 0; j < width; j++) {
+				if (MAP::map[i][j] == 0) {
 					fwrite(white, sizeof(unsigned char), 3, pfile);
 				}
 				else fwrite(black, sizeof(unsigned char), 3, pfile);
@@ -133,7 +137,7 @@ namespace
 		}
 
 		fclose(pfile);
-		
+
 #endif
 	}
 }
