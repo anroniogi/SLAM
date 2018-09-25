@@ -204,18 +204,38 @@ int CStellaB1::FindAndMove(unsigned char *response, int n, unsigned char command
 
 bool CStellaB1::Run()
 {
-	unsigned char cmd[] = { STX,
-		'C', 'P', 'A',
-		'R',
-		'0','0','0',
-		'D','F',
-		'2',
-		'0',
-		'0',
-		'T','0','0','3',ETX
-	};
-	WritePacket(cmd, sizeof(cmd));
-	return true;
+
+	int flag = 0;
+	if (flag == 0) {
+		unsigned char cmd[] = { STX,
+			'C', 'P', 'A',
+			'L',
+			'0','0','0',
+			'D','F',
+			'2',
+			'0',
+			'0',
+			'T','0','0','3',ETX
+		};
+		WritePacket(cmd, sizeof(cmd));
+		flag = 1;
+		return true;
+	}
+
+	if (flag == 1) {
+		unsigned char cmd[] = { STX,
+			'C', 'P', 'A',
+			'R',
+			'0','0','0',
+			'D','F',
+			'2',
+			'0',
+			'0',
+			'T','0','0','3',ETX
+		};
+		WritePacket(cmd, sizeof(cmd));
+		return true;
+	}
 }
 
 

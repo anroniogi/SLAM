@@ -86,16 +86,18 @@ int main(int argc, char *argv[])
 
 	//for (int i = 0; i < Capture_times; ++i) {
 		//while (1) {
-			for (int i = 0; i < 300; ++i) {
+			for (int i = 0; i < 30; ++i) {
 
 
 				//Stella ÀÌµ¿
 				_sg->Run();
 
-				
-				//_sg->TurnLeft();
 
-				Sleep(1000);
+				Sleep(3000);
+				//_sg->TurnLeft();	
+				_sg->GetPosition(&left, &right);
+				printf("Get Position %f %f",left,right);
+				Sleep(3000);
 				//_sg->Reset();
 
 				vector<long> data;
