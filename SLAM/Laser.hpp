@@ -1,3 +1,6 @@
+/*
+
+#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
 
@@ -17,10 +20,9 @@
 #include <opencv2/opencv.hpp>
 
 
-/**
-* BMP파일 생성을 위한 선언들...
-*
-***************************************************************************************************/
+
+// BMP파일 생성을 위한 선언들...
+
 unsigned int width = 200, height = 200;
 unsigned int bpp = 24;
 unsigned int rowsize = ((bpp*width + 31) / 32) * 4;
@@ -32,7 +34,7 @@ unsigned int resolution = 2835;//see wiki. 72dpi* 39.3701 in/meter
 
 unsigned char bmpfileheader[14] = { 'B','M',   0,0,0,0 ,   0,0,0,0 ,   54,0,0,0 };
 unsigned char bmpinfoheader[40] = { 40,0,0,0,  width,0,0,0,   height,0,0,0 ,   1,0,24,0 };
-/***************************************************************************************************/
+//----------
 
 
 struct Laser {
@@ -51,6 +53,7 @@ namespace MAP {
 
 //Landmark - map의 코너검출
 cv::vector<cv::Point2f> corners;
+
 
 
 union RGB {
@@ -173,3 +176,4 @@ namespace
 #endif
 	}
 }
+*/

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QRK_DETECT_OS_H
 #define QRK_DETECT_OS_H
 

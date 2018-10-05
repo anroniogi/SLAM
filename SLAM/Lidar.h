@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QRK_LIDAR_H
 #define QRK_LIDAR_H
 

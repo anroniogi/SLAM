@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QRK_CONNECTION_INFORMATION_H
 #define QRK_CONNECTION_INFORMATION_H
 

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <windows.h>
 #include <assert.h>
+#include "SLAM.hpp"
 
 static const unsigned char STX = 0x02;
 static const unsigned char ETX = 0x03;
@@ -101,7 +102,12 @@ bool CStellaB1::GetState(char *state)
 
 bool CStellaB1::GetPosition(float *leftMotor, float *rightMotor)
 {
-	unsigned char cmd[] = { STX, 'G', 'P', 'O', 'S', 'I', 'T', 'I', 'O', 'N', 'A', ETX };
+	double wheel_distance = 75.2;
+	double ds;
+	float left, right;
+	float robot_x, robot_y, robot_theta;
+
+	unsigned char cmd[] = { STX, 'G', 'P', 'O', 'S', 'I', 'T', 'I', 'O', 'N', 'A', ETX };	
 	WritePacket(cmd, sizeof(cmd));
 
 	unsigned char res[16] = { 0, };
@@ -113,6 +119,7 @@ bool CStellaB1::GetPosition(float *leftMotor, float *rightMotor)
 		*rightMotor = *rightMotor / 100;
 		if (res[1] == 'B') *leftMotor = -*leftMotor;
 		if (res[8] == 'B') *rightMotor = -*rightMotor;
+
 		return true;
 	}
 	else {

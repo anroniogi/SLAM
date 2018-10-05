@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QRK_URG_DRIVER_H
 #define QRK_URG_DRIVER_H
 

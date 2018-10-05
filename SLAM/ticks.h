@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QRK_TICKS_H
 #define QRK_TICKS_H
 

@@ -13,6 +13,8 @@ public:
 	bool Init ();
 	bool GetState (char *state);
 	bool GetPosition (float *leftMotor, float *rightMotor);
+	//struct Position GetPosition(float *leftMotor, float *rightMotor);
+	
 
 	bool CStellaB1::Run();
 	bool CStellaB1::TurnLeft();
