@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 		
 		move();
 	
-		Sleep(500);
+		Sleep(1000);
 
 	}
 

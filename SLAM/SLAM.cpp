@@ -16,7 +16,7 @@ namespace MAP {
 	int map[300][300] = { 0, };
 }
 cv::Mat image;
-struct Position landmark = { 100, 100, 0 };
+struct Position landmark;
 
 // map의 edge 검출 저장용
 cv::vector<cv::Point2f> corners;
@@ -76,7 +76,8 @@ void window() {
 			}
 		}
 		imshow("result 1", image);
-		printf("%d개 출력\n", cnt);
+		
+		//printf("%d개 출력\n", cnt);
 		cv::waitKey(500);
 	}
 }
@@ -85,6 +86,9 @@ void window() {
 
 void initialize(int argc, char *argv[]) {
 	float left, right;
+	landmark.x = 100;
+	landmark.y = 100;
+	landmark.theta = 0;
 
 	//opencv gui thread 선언
 	std::thread t1(window);
@@ -144,7 +148,8 @@ void localize() {
 }
 
 void move() {
-	_sg->Run();
+	//_sg->Run();
+	_sg->Velocity(20, 20);
 }
 
 void drawMap() {
@@ -168,7 +173,7 @@ void drawMap() {
 		double radian = urg.index2rad(i);
 		long x = static_cast<long>(l * cos(radian));
 		long y = static_cast<long>(l * sin(radian));
-		std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
+		//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
 
 		laser[cnt].num = i;
 		laser[cnt].x = x;
@@ -260,7 +265,7 @@ void getPosition() {
 	printf("\nrobot position, theta\n");
 	printf("robot_x = %f, robot_y = %f, robot_theta = %f\n", robot_x, robot_y, robot_theta);
 	printf("\n%1d  %10.1f  %10.1f \n", (int)state, (double)left, (double)right);
- #endif
+#endif
 
 }
 
@@ -298,7 +303,12 @@ void findCorner(){
 
 void findRoute() {
 
-	printf("레이저스캐너 left = %f, center = %f, right = %f\n", data[0], data[71], data[140]);
+	long data1, data2, data3;
+	data1 = data[0];
+	data2 = data[71];
+	data3 = data[140];
+
+	printf("레이저스캐너 left = %ld, center = %ld, right = %ld, time = %ld\n", data1, data2, data3, time_stamp);
 
 }
 

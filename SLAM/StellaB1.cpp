@@ -219,10 +219,8 @@ bool CStellaB1::Run()
 			'L',
 			'0','0','0',
 			'D','F',
-			'2',
-			'0',
-			'0',
-			'T','0','0','3',ETX
+			'0','1','0',
+			'T','0','0','1',ETX
 		};
 		WritePacket(cmd, sizeof(cmd));
 		flag = 1;
@@ -235,10 +233,8 @@ bool CStellaB1::Run()
 			'R',
 			'0','0','0',
 			'D','F',
-			'2',
-			'0',
-			'0',
-			'T','0','0','3',ETX
+			'0','1','0',
+			'T','0','0','1',ETX
 		};
 		WritePacket(cmd, sizeof(cmd));
 		return true;
