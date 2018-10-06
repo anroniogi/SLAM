@@ -28,5 +28,10 @@ void getPosition();
 void getLaserData();
 void move();
 void mapping();
-void find_corner();
+void findCorner();
+void correction();
+void predict();
+void update();
+void drawMap();
+void findRoute();
 

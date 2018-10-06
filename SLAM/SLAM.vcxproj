@@ -25,6 +25,7 @@
     <ClInclude Include="Lidar.h" />
     <ClInclude Include="math_utilities.h" />
     <ClInclude Include="SerialPort.h" />
+    <ClInclude Include="SLAM.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StellaB1.h" />
     <ClInclude Include="targetver.h" />
@@ -35,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Connection_information.cpp" />
+    <ClCompile Include="SLAM.cpp" />
     <ClCompile Include="SLAM_main.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="StellaB1.cpp" />

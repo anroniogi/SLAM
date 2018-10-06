@@ -16,6 +16,7 @@ namespace MAP {
 	int map[300][300] = { 0, };
 }
 cv::Mat image;
+struct Position landmark = { 100, 100, 0 };
 
 // map의 edge 검출 저장용
 cv::vector<cv::Point2f> corners;
@@ -120,10 +121,25 @@ void initialize(int argc, char *argv[]) {
 
 }
 
+void predict() {
+
+	
+}
+
+void update() {
+
+
+}
+
+
 void localize() {
 	
 	getPosition();
 	getLaserData();
+
+	//구현해야됨
+	predict();
+	update();
 	
 }
 
@@ -131,7 +147,7 @@ void move() {
 	_sg->Run();
 }
 
-void mapping() {
+void drawMap() {
 
 	// bmp 파일 생성
 	bmpinfoheader[25] = (unsigned char)(resolution);      //horizontal resolutions
@@ -182,7 +198,31 @@ void mapping() {
 	}
 
 	fclose(pfile);
+
+}
+
+void correction() {
 	
+	int max = 0;
+
+	for (int i = 0; i < corners.size(); ++i) {
+		if (corners[i].x == landmark.x && corners[i].y == landmark.y)
+		{
+			printf("landmark detection\n");
+		}
+	}
+
+
+}
+
+void mapping() {
+
+	findCorner();
+
+	correction();
+
+	drawMap();
+		
 }
 
 void getLaserData() {
@@ -224,7 +264,7 @@ void getPosition() {
 
 }
 
-void find_corner(){
+void findCorner(){
 
 	cv::Mat gray;
 
@@ -254,4 +294,11 @@ void find_corner(){
 	//
 	imshow("cvCorner", cvCorner);
 	cv::waitKey(1);
-	}
+}
+
+void findRoute() {
+
+	printf("레이저스캐너 left = %f, center = %f, right = %f\n", data[0], data[71], data[140]);
+
+}
+

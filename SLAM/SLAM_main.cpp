@@ -19,17 +19,16 @@ int main(int argc, char *argv[]) {
 
 		localize();
 		
+		//인준이 debug용
+		findRoute();
+
 		mapping();
-		
-		find_corner();
 		
 		move();
 	
 		Sleep(500);
 
 	}
-
-
 
 	return 0;
 }
