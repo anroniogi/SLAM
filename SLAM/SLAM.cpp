@@ -82,18 +82,7 @@ void window() {
 	}
 }
 
-
-
-void initialize(int argc, char *argv[]) {
-	float left, right;
-	landmark.x = 100;
-	landmark.y = 100;
-	landmark.theta = 0;
-
-	//opencv gui thread 선언
-	std::thread t1(window);
-	t1.detach();
-
+void stellaInitialize() {
 	//stella 연결
 	_rc = new CSerialPort();
 	_rc->Open("COM3", CBR_115200, 8, ONESTOPBIT, NOPARITY);
@@ -103,8 +92,9 @@ void initialize(int argc, char *argv[]) {
 	// 스텔라 이니셜라이즈
 	_sg->Init();
 	_sg->Reset();
-	//_sg->GetState(&state);
-	//_sg->GetPosition(&left, &right);
+}
+
+void laserScannerInitialize(int argc, char *argv[]) {
 
 	// LaserScanner 연결
 	qrk::Connection_information information(argc, argv);
@@ -122,6 +112,23 @@ void initialize(int argc, char *argv[]) {
 
 	min_distance = urg.min_distance();
 	max_distance = urg.max_distance();
+
+}
+
+
+void initialize(int argc, char *argv[]) {
+	landmark.x = 100;
+	landmark.y = 100;
+	landmark.theta = 0;
+
+	//opencv gui thread 선언
+	std::thread t1(window);
+	t1.detach();
+
+	stellaInitialize();
+
+	laserScannerInitialize(argc, argv);
+
 
 }
 

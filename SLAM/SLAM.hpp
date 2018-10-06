@@ -22,6 +22,8 @@
 
 
 void initialize(int argc, char *argv[]);
+void stellaInitialize();
+void laserScannerInitialize(int argc, char *argv[]);
 void window();
 void localize();
 void getPosition();
