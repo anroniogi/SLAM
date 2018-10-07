@@ -62,7 +62,6 @@ RGB black[3] = { 0, 0, 0 };
 
 //opencv gui 창선언
 void window() {
-	//cv::Mat image = cv::Mat::zeros(300, 300, CV_8UC3);	// 세로, 가로 각각 400, 400 사이즈의 검정 이미지를 만든다.
 	image = cv::Mat::zeros(300, 300, CV_8UC3);	// 세로, 가로 각각 400, 400 사이즈의 검정 이미지를 만든다.
 	image = cv::Scalar(255, 255, 255);				// 이미지 흰색으로 초기화
 	while (1) {
@@ -107,6 +106,7 @@ void laserScannerInitialize(int argc, char *argv[]) {
 
 	// Laser 측정 각도 설정 150도, step 143 // position max 4000
 	urg.set_scanning_parameter(urg.deg2step(-75), urg.deg2step(+75), 3);
+
 	enum { Capture_times = 10 };
 	urg.start_measurement(qrk::Urg_driver::Distance, qrk::Urg_driver::Infinity_times, 0);	// 측정 시작
 
@@ -155,7 +155,7 @@ void localize() {
 }
 
 void move() {
-	//_sg->Run();
+	_sg->Run();
 	_sg->Velocity(20, 20);
 }
 
@@ -238,7 +238,7 @@ void mapping() {
 }
 
 void getLaserData() {
-
+	data.clear();
 	if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
 		std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
 	}
@@ -315,7 +315,8 @@ void findRoute() {
 	data2 = data[71];
 	data3 = data[140];
 
-	printf("레이저스캐너 left = %ld, center = %ld, right = %ld, time = %ld\n", data1, data2, data3, time_stamp);
+	printf("레이저스캐너 left = %ld, center = %ld, right = %ld, time = %ld, data size = %d\n", data1, data2, data3, time_stamp, data.size());
+	data.clear();
 
 }
 
