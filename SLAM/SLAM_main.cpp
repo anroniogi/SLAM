@@ -13,12 +13,12 @@ int main(int argc, char *argv[]) {
 	
 	laserScannerInitialize(argc, argv);
 
-	/* 인준이 debug용
+	// 인준이 debug용
+	/*
 	while (1) {
 		
 		getLaserData();
 		findRoute();
-
 	}
 	*/
 	
