@@ -6,6 +6,7 @@
 CSerialPort *_rc;
 CStellaB1 *_sg;
 char state;
+int turnLeft= 0 ;
 
 // Mobile Robot Position
 struct Position {
@@ -154,9 +155,18 @@ void localize() {
 	
 }
 
+
 void move() {
-	_sg->Run();
-	_sg->Velocity(20, 20);
+	//_sg->Run();
+	if (data[69] < 100 || data[71] < 100 || data[73] < 100) {
+		++turnLeft;
+		if (turnLeft > 3) {
+			_sg->TurnLeft();
+		}
+	}
+	else {
+		_sg->Velocity(20, 20);
+	}
 }
 
 void drawMap() {
