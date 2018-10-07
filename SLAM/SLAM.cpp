@@ -158,7 +158,8 @@ void localize() {
 
 void move() {
 	//_sg->Run();
-	if (data[69] < 100 || data[71] < 100 || data[73] < 100) {
+	//if (800 < data[69] && data[69] < 1000 || 800 < data[71] < 1000 || 800 < data[73] < 1000) {
+	if ((800 < data[69] && data[69] < 1000) || (800 < data[71] && data[71] < 1000) || (800 < data[73] && data[73] < 1000)) {
 		++turn_ㅣeft;
 		if (turn_ㅣeft > 3) {
 			_sg->TurnLeft();
@@ -327,7 +328,7 @@ void findRoute() {
 	data3 = data[140];
 
 	printf("레이저스캐너 left = %ld, center = %ld, right = %ld, time = %ld, data size = %d\n", data1, data2, data3, time_stamp, data.size());
-	data.clear();
+	//data.clear();
 
 }
 
