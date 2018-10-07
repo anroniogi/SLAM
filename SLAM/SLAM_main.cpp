@@ -14,29 +14,22 @@ int main(int argc, char *argv[]) {
 
 	// 인준이 debug용
 	/*
+	laserScannerInitialize(argc, argv);
 	while (1) {
 		
 		getLaserData();
 		findRoute();
 	}
 	*/
-	
-	laserScannerInitialize(argc, argv);
 
-	while (1) {
-		getLaserData();
-		findRoute();
-	}
 
 	initialize(argc, argv);
+
 
 	while (1) {
 
 		localize();
 		
-		//인준이 debug용
-		findRoute();
-
 		mapping();
 		
 		move();
