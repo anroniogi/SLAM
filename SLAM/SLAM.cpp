@@ -157,13 +157,16 @@ void localize() {
 
 
 void move() {
+	printf("data[74] = %ld\n", data[74]);
 	//_sg->Run();
-	//if (800 < data[69] && data[69] < 1000 || 800 < data[71] < 1000 || 800 < data[73] < 1000) {
-	if ((800 < data[69] && data[69] < 1000) || (800 < data[71] && data[71] < 1000) || (800 < data[73] && data[73] < 1000)) {
+	//if ((800 < data[69] && data[69] < 1000) || (800 < data[71] && data[71] < 1000) || (800 < data[73] && data[73] < 1000)) {
+	if (400 < data[74] && data[74] < 700) {
 		++turn_ㅣeft;
+		printf("전방에 수류탄!");
 		if (turn_ㅣeft > 3) {
 			_sg->TurnLeft();
 			turn_ㅣeft = 0;
+			printf("\n");
 		}
 	}
 	else {
@@ -323,12 +326,12 @@ void findCorner(){
 void findRoute() {
 
 	long data1, data2, data3;
-	data1 = data[0];
-	data2 = data[71];
-	data3 = data[140];
+	data1 = data[71];
+	data2 = data[74];
+	data3 = data[77];
 
 	printf("레이저스캐너 left = %ld, center = %ld, right = %ld, time = %ld, data size = %d\n", data1, data2, data3, time_stamp, data.size());
-	//data.clear();
+	data.clear();
 
 }
 
