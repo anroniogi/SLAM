@@ -15,10 +15,12 @@ int main(int argc, char *argv[]) {
 	// 인준이 debug용
 	/*
 	laserScannerInitialize(argc, argv);
+	Sleep(1000);
 	while (1) {
 		
 		getLaserData();
 		findRoute();
+		//Sleep(1000);
 	}
 	*/
 
