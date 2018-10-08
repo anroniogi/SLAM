@@ -144,10 +144,10 @@ void update() {
 }
 
 
-void localize() {
+void localize(int argc, char *argv[]) {
 	
 	getPosition();
-	getLaserData();
+	getLaserData(argc, argv);
 
 	//구현해야됨
 	predict();
@@ -252,10 +252,13 @@ void mapping() {
 		
 }
 
-void getLaserData() {
+void getLaserData(int argc, char *argv[]) {
 	data.clear();
 	if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
 		std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
+		//_sg->Velocity(0, 0);
+		urg.close();
+		laserScannerInitialize(argc, argv);
 	}
 
 }
