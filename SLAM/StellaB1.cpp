@@ -250,7 +250,7 @@ bool CStellaB1::TurnLeft()
 		'0','9','0', //회전각도
 		'D','F',//상관없음
 		'0','0','0',// 이동거리
-		'T','0','0','2',// 이동시간
+		'T','0','0','3',// 이동시간
 		ETX
 	};
 	WritePacket(cmd_left, sizeof(cmd_left));

@@ -1,6 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
+
 //Stella B1
 #include "stdafx.h"
 #include "SerialPort.h"

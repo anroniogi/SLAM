@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "SLAM.hpp"
-
 std::mutex mtx;
 
 //stella 변수
@@ -20,6 +19,7 @@ namespace MAP {
 }
 cv::Mat image;
 struct Position landmark;
+struct Position prevPosition;
 
 // map의 edge 검출 저장용
 cv::vector<cv::Point2f> corners;
@@ -66,14 +66,14 @@ RGB black[3] = { 0, 0, 0 };
 //opencv gui 창선언
 void window() {
 	image = cv::Mat::zeros(300, 300, CV_8UC3);	// 세로, 가로 각각 400, 400 사이즈의 검정 이미지를 만든다.
-	image = cv::Scalar(255, 255, 255);				// 이미지 흰색으로 초기화
+	//image = cv::Scalar(255, 255, 255);			// 이미지 흰색으로 초기화
 	while (1) {
 		int cnt = 0;
 		for (int i = 0; i < 300; ++i) {
 			for (int j = 0; j < 300; ++j) {
 				if (MAP::map[i][j] != 0) {
-					ellipse(image, cv::Point(i, j), cv::Size(2, 2), 0, 0, 360, cv::Scalar(0, 0, 0), 1, 8);
-					cv::line(image, cv::Point(floor(Position.x/50), floor((Position.y+6000)/50)), cv::Point(i, j), cv::Scalar(0, 0, 255), 1, 8, 0);
+					//ellipse(image, cv::Point(i, j), cv::Size(2, 2), 0, 0, 360, cv::Scalar(0, 0, 0), 1, 8);
+					cv::line(image, cv::Point(floor(Position.x/50), floor((Position.y+6000)/50)), cv::Point(i, j), cv::Scalar(255, 255, 255), 1, 8, 0);
 					++cnt;
 				}
 			}
@@ -119,16 +119,9 @@ void laserScannerInitialize(int argc, char *argv[]) {
 
 }
 
-void printLaser() {
-	if (mtx.try_lock()) {
-		std::cout << "data size : " << data.size() << "  data[60] : " << data[60] << "  data[70] : " << data[70] << "  data[80] : " << data[80] << std::endl;
-		mtx.unlock();
-	}
-	//Sleep(100);
-}
 void laserThread(int argc, char *argv[]) {
 	while (1) {
-			getLaserData(argc, argv);
+		getLaserData(argc, argv);
 	}
 	//Sleep(100);
 }
@@ -139,7 +132,7 @@ void initialize(int argc, char *argv[]) {
 	landmark.y = 100;
 	landmark.theta = 0;
 
-	//stellaInitialize();
+	stellaInitialize();
 	Sleep(500);
 	laserScannerInitialize(argc, argv);
 	Sleep(500);
@@ -166,6 +159,7 @@ void update() {
 
 void localize(int argc, char *argv[]) {
 	//_sg->Velocity(0, 0);
+	prevPosition = Position;
 	getPosition();
 	//getLaserData(argc, argv);
 	printf("position : %ld, %ld, %ld\n", Position.x, Position.y, Position.theta);
@@ -177,75 +171,83 @@ void localize(int argc, char *argv[]) {
 
 
 void move() {
+	mtx.lock();
 	printf("data[70] = %ld, data[74] = %ld, data[78] = %ld\n", data[70], data[74], data[78]);
-	//_sg->Run();
-	//if ((800 < data[69] && data[69] < 1000) || (800 < data[71] && data[71] < 1000) || (800 < data[73] && data[73] < 1000)) {
-	if ((400 < data[70] && data[70] < 700) || 
-		(400 < data[74] && data[74] < 700) ||
-		(400 < data[78] && data[78] < 700)) {
-			printf("전방에 수류탄!");
+	if ((400 < data[70] && data[70] < 1100) || 
+		(400 < data[74] && data[74] < 1100) ||
+		(400 < data[78] && data[78] < 1100)) {
 			_sg->Velocity(0, 0);
+			printf("전방에 장애물!\n");
 			_sg->TurnLeft();
-			Sleep(100);
+			//다시 직진해야되나?
+			//_sg->Velocity(20, 20);
+			Sleep(3000);
+			data.clear();
 			printf("\n");
-	}
-	else {
+	} else {
 		_sg->Velocity(20, 20);
 	}
+	mtx.unlock();
 }
 
 void drawMap() {
-
-	// bmp 파일 생성
-	bmpinfoheader[25] = (unsigned char)(resolution);      //horizontal resolutions
-	bmpinfoheader[29] = (unsigned char)(resolution);      //vertical resolutions
-	pfile = fopen("map.bmp", "wb");
-	fwrite(bmpfileheader, 1, 14, pfile);
-	fwrite(bmpinfoheader, 1, 40, pfile);
-
-	int cnt = 0;
-
-	size_t data_n = data.size();
-	for (size_t i = 0; i < data_n; ++i) {
-		long l = data[i];
-		if ((l <= min_distance) || (l >= max_distance)) {
-			continue;
+	if (Position.x > -3.0 && Position.y > -3.0) {
+		if (sqrt((Position.x - prevPosition.x) ^ 2 + (Position.y - prevPosition.y) ^ 2) > 100) {
+			getPosition();
 		}
+		// bmp 파일 생성
+		bmpinfoheader[25] = (unsigned char)(resolution);      //horizontal resolutions
+		bmpinfoheader[29] = (unsigned char)(resolution);      //vertical resolutions
+		pfile = fopen("map.bmp", "wb");
+		fwrite(bmpfileheader, 1, 14, pfile);
+		fwrite(bmpinfoheader, 1, 40, pfile);
 
-		//laser scanner 측정위치 x,y 계산
-		double radian = urg.index2rad(i);
-		long x = static_cast<long>(l * cos(radian));
-		long y = static_cast<long>(l * sin(radian));
-		//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
+		int cnt = 0;
 
-		laser[cnt].num = i;
-		laser[cnt].x = x;
-		laser[cnt].y = y + 6000;
-		++cnt;
-
-		//mobile robot의 Position x, y만큼 장애물위치 이동
-		tempx = floor((x  + Position.x) / 50);
-		tempy = floor((y + 6000 + Position.y) / 50);
-
-		//mobile robot의 theta만큼 장애물위치 회전
-		tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
-		tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
-
-
-		// 배열에 대입
-		MAP::map[tempx][tempy] += 1;
-	}
-
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			if (MAP::map[i][j] == 0) {
-				fwrite(white, sizeof(unsigned char), 3, pfile);
+		size_t data_n = data.size();
+		for (size_t i = 0; i < data_n; ++i) {
+			long l = data[i];
+			if ((l <= min_distance) || (l >= max_distance)) {
+				continue;
 			}
-			else fwrite(black, sizeof(unsigned char), 3, pfile);
-		}
-	}
 
-	fclose(pfile);
+
+			//laser scanner 측정위치 x,y 계산
+			double radian = urg.index2rad(i);
+			long x = static_cast<long>(l * cos(radian));
+			long y = static_cast<long>(l * sin(radian));
+			//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
+
+			laser[cnt].num = i;
+			laser[cnt].x = x;
+			laser[cnt].y = y + 6000;
+			++cnt;
+
+			//mobile robot의 Position x, y만큼 장애물위치 이동
+			tempx = floor((x + Position.x) / 50);
+			tempy = floor((y + 6000 + Position.y) / 50);
+
+			//mobile robot의 theta만큼 장애물위치 회전
+			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
+			tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
+
+
+			// 배열에 대입
+			MAP::map[tempx][tempy] += 1;
+
+		}
+
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (MAP::map[i][j] == 0) {
+					fwrite(white, sizeof(unsigned char), 3, pfile);
+				}
+				else fwrite(black, sizeof(unsigned char), 3, pfile);
+			}
+		}
+
+		fclose(pfile);
+	}
 
 }
 
@@ -265,9 +267,9 @@ void correction() {
 
 void mapping() {
 
-	findCorner();
+	//findCorner();
 
-	correction();
+	//correction();
 
 	drawMap();
 		
@@ -275,18 +277,18 @@ void mapping() {
 
 void getLaserData(int argc, char *argv[]) {
 	while (1) {
-		if (mtx.try_lock()) {
-			data.clear();
-			time_stamp = 0;
-			if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
-				std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
-				//_sg->Velocity(0, 0);
-				urg.close();
-				laserScannerInitialize(argc, argv);
-				urg.get_distance(data, &time_stamp);
-			}
-			mtx.unlock();
+		mtx.lock();
+		data.clear();
+		time_stamp = 0;
+		if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
+			std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
+			//_sg->Velocity(0, 0);
+			urg.close();
+			laserScannerInitialize(argc, argv);
+			urg.get_distance(data, &time_stamp);
 		}
+		mtx.unlock();
+		Sleep(50);
 	}
 }
 
