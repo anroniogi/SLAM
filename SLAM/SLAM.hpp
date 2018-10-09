@@ -14,6 +14,7 @@
 #include "Urg_driver.h"
 #include "Connection_information.h"
 #include "math_utilities.h"
+#include <mutex>
 
 //GUI
 #include <opencv2/opencv.hpp>
@@ -35,3 +36,5 @@ void update();
 void drawMap();
 void findRoute();
 void turnLeft();
+void printLaser();
+void laserThread(int argc, char *argv[]);

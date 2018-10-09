@@ -29,14 +29,14 @@ int main(int argc, char *argv[]) {
 
 
 	while (1) {
-
-		localize(argc, argv);
+		printLaser();
+		//localize(argc, argv);
 		
-		mapping();
+		//mapping();
 		
-		move();
+		//move();
 		
-		Sleep(200);
+		//Sleep(200);
 
 	}
 

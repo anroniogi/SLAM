@@ -2,7 +2,7 @@
 
 #include "SLAM.hpp"
 
-
+std::mutex mtx;
 
 //stella 변수
 CSerialPort *_rc;
@@ -119,6 +119,19 @@ void laserScannerInitialize(int argc, char *argv[]) {
 
 }
 
+void printLaser() {
+	if (mtx.try_lock()) {
+		std::cout << "data size : " << data.size() << "  data[60] : " << data[60] << "  data[70] : " << data[70] << "  data[80] : " << data[80] << std::endl;
+		mtx.unlock();
+	}
+	//Sleep(100);
+}
+void laserThread(int argc, char *argv[]) {
+	while (1) {
+			getLaserData(argc, argv);
+	}
+	//Sleep(100);
+}
 
 void initialize(int argc, char *argv[]) {
 	//landmark 선언
@@ -126,7 +139,7 @@ void initialize(int argc, char *argv[]) {
 	landmark.y = 100;
 	landmark.theta = 0;
 
-	stellaInitialize();
+	//stellaInitialize();
 	Sleep(500);
 	laserScannerInitialize(argc, argv);
 	Sleep(500);
@@ -135,7 +148,7 @@ void initialize(int argc, char *argv[]) {
 	t1.detach();
 	Sleep(500);
 	//laserData 받아오는 thread 생성
-	std::thread t2(getLaserData, argc, argv);
+	std::thread t2(laserThread, argc, argv);
 	t2.detach();
 	Sleep(500);
 }
@@ -262,14 +275,17 @@ void mapping() {
 
 void getLaserData(int argc, char *argv[]) {
 	while (1) {
-		data.clear();
-		time_stamp = 0;
-		if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
-			std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
-			//_sg->Velocity(0, 0);
-			urg.close();
-			laserScannerInitialize(argc, argv);
-			urg.get_distance(data, &time_stamp);
+		if (mtx.try_lock()) {
+			data.clear();
+			time_stamp = 0;
+			if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
+				std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
+				//_sg->Velocity(0, 0);
+				urg.close();
+				laserScannerInitialize(argc, argv);
+				urg.get_distance(data, &time_stamp);
+			}
+			mtx.unlock();
 		}
 	}
 }
