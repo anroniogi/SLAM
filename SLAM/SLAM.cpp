@@ -8,7 +8,7 @@ CStellaB1 *_sg;
 char state;
 int turn_ㅣeft= 0 ;
 
-// Mobile Robot Position
+// Mobile Robot Position, 단위는 cm
 struct Position {
 	long x = 0, y = 0, theta = 0;
 } Position;
@@ -71,6 +71,7 @@ void window() {
 			for (int j = 0; j < 300; ++j) {
 				if (MAP::map[i][j] != 0) {
 					ellipse(image, cv::Point(i, j), cv::Size(2, 2), 0, 0, 360, cv::Scalar(0, 0, 0), 1, 8);
+					cv::line(image, cv::Point(floor(Position.x/50), floor((Position.y+6000)/50)), cv::Point(i, j), cv::Scalar(0, 0, 255), 1, 8, 0);
 					++cnt;
 				}
 			}
@@ -78,7 +79,7 @@ void window() {
 		imshow("result 1", image);
 		
 		//printf("%d개 출력\n", cnt);
-		cv::waitKey(500);
+		cv::waitKey(100);
 	}
 }
 
@@ -145,10 +146,10 @@ void update() {
 
 
 void localize(int argc, char *argv[]) {
-	
+	//_sg->Velocity(0, 0);
 	getPosition();
 	getLaserData(argc, argv);
-
+	printf("position : %ld, %ld, %ld\n", Position.x, Position.y, Position.theta);
 	//구현해야됨
 	predict();
 	update();
@@ -157,17 +158,17 @@ void localize(int argc, char *argv[]) {
 
 
 void move() {
-	printf("data[74] = %ld\n", data[74]);
+	printf("data[70] = %ld, data[74] = %ld, data[78] = %ld\n", data[70], data[74], data[78]);
 	//_sg->Run();
 	//if ((800 < data[69] && data[69] < 1000) || (800 < data[71] && data[71] < 1000) || (800 < data[73] && data[73] < 1000)) {
-	if (400 < data[74] && data[74] < 700) {
-		++turn_ㅣeft;
-		printf("전방에 수류탄!");
-		if (turn_ㅣeft > 3) {
+	if ((400 < data[70] && data[70] < 700) || 
+		(400 < data[74] && data[74] < 700) ||
+		(400 < data[78] && data[78] < 700)) {
+			printf("전방에 수류탄!");
+			_sg->Velocity(0, 0);
 			_sg->TurnLeft();
-			turn_ㅣeft = 0;
+			Sleep(100);
 			printf("\n");
-		}
 	}
 	else {
 		_sg->Velocity(20, 20);
@@ -192,6 +193,7 @@ void drawMap() {
 			continue;
 		}
 
+		//laser scanner 측정위치 x,y 계산
 		double radian = urg.index2rad(i);
 		long x = static_cast<long>(l * cos(radian));
 		long y = static_cast<long>(l * sin(radian));
@@ -199,12 +201,12 @@ void drawMap() {
 
 		laser[cnt].num = i;
 		laser[cnt].x = x;
-		laser[cnt].y = y + 4000;
+		laser[cnt].y = y + 6000;
 		++cnt;
 
 		//mobile robot의 Position x, y만큼 장애물위치 이동
-		tempx = floor(x / 50) + Position.x;
-		tempy = floor((y + 4000) / 50) + Position.y;
+		tempx = floor((x  + Position.x) / 50);
+		tempy = floor((y + 6000 + Position.y) / 50);
 
 		//mobile robot의 theta만큼 장애물위치 회전
 		tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
@@ -259,8 +261,9 @@ void getLaserData(int argc, char *argv[]) {
 		//_sg->Velocity(0, 0);
 		urg.close();
 		laserScannerInitialize(argc, argv);
+		urg.get_distance(data, &time_stamp);
 	}
-
+	time_stamp = 0;
 }
 
 void getPosition() {
@@ -282,8 +285,8 @@ void getPosition() {
 	robot_x = ds*cos(robot_theta / 2);
 	robot_y = ds*sin(robot_theta / 2);
 
-	Position.x = ds*cos(robot_theta / 2);
-	Position.y = ds*sin(robot_theta / 2);
+	Position.x = (ds*cos(robot_theta / 2))*10;
+	Position.y = (ds*sin(robot_theta / 2))*10;
 	Position.theta = (right - left) / (wheel_distance);
 
 #ifdef DEBUG

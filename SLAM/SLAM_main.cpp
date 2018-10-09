@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 	
 
 	// 인준이 debug용
-	
+	/*
 	laserScannerInitialize(argc, argv);
 	Sleep(1000);
 	while (1) {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		findRoute();
 		Sleep(500);
 	}
-	
+	*/
 
 
 	initialize(argc, argv);
@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
 		mapping();
 		
 		move();
-	
-		Sleep(1000);
+		
+		//Sleep(100);
 
 	}
 
