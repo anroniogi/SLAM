@@ -2,6 +2,8 @@
 
 #include "SLAM.hpp"
 
+
+
 //stella 변수
 CSerialPort *_rc;
 CStellaB1 *_sg;
@@ -119,19 +121,23 @@ void laserScannerInitialize(int argc, char *argv[]) {
 
 
 void initialize(int argc, char *argv[]) {
+	//landmark 선언
 	landmark.x = 100;
 	landmark.y = 100;
 	landmark.theta = 0;
 
+	stellaInitialize();
+	Sleep(500);
+	laserScannerInitialize(argc, argv);
+	Sleep(500);
 	//opencv gui thread 선언
 	std::thread t1(window);
 	t1.detach();
-
-	stellaInitialize();
-
-	laserScannerInitialize(argc, argv);
-
-
+	Sleep(500);
+	//laserData 받아오는 thread 생성
+	std::thread t2(getLaserData, argc, argv);
+	t2.detach();
+	Sleep(500);
 }
 
 void predict() {
@@ -148,7 +154,7 @@ void update() {
 void localize(int argc, char *argv[]) {
 	//_sg->Velocity(0, 0);
 	getPosition();
-	getLaserData(argc, argv);
+	//getLaserData(argc, argv);
 	printf("position : %ld, %ld, %ld\n", Position.x, Position.y, Position.theta);
 	//구현해야됨
 	predict();
@@ -255,15 +261,17 @@ void mapping() {
 }
 
 void getLaserData(int argc, char *argv[]) {
-	data.clear();
-	if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
-		std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
-		//_sg->Velocity(0, 0);
-		urg.close();
-		laserScannerInitialize(argc, argv);
-		urg.get_distance(data, &time_stamp);
+	while (1) {
+		data.clear();
+		time_stamp = 0;
+		if (!urg.get_distance(data, &time_stamp)) {		//laser 측정
+			std::cout << "Urg_driver::get_distance(): " << urg.what() << std::endl;
+			//_sg->Velocity(0, 0);
+			urg.close();
+			laserScannerInitialize(argc, argv);
+			urg.get_distance(data, &time_stamp);
+		}
 	}
-	time_stamp = 0;
 }
 
 void getPosition() {

@@ -1,7 +1,6 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
-
 //Stella B1
 #include "stdafx.h"
 #include "SerialPort.h"
@@ -19,7 +18,6 @@
 //GUI
 #include <opencv2/opencv.hpp>
 #include <thread>
-
 
 void initialize(int argc, char *argv[]);
 void stellaInitialize();

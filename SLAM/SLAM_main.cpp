@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	}
 	*/
 
-
+	
 	initialize(argc, argv);
 
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		
 		move();
 		
-		//Sleep(100);
+		Sleep(200);
 
 	}
 
