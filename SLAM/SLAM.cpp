@@ -9,6 +9,8 @@ CStellaB1 *_sg;
 char state;
 int turn_ㅣeft= 0 ;
 
+
+
 // Mobile Robot Position, 단위는 cm
 struct Position {
 	long x = 0, y = 0, theta = 0;
@@ -173,21 +175,22 @@ void localize(int argc, char *argv[]) {
 void move() {
 	mtx.lock();
 	printf("data[70] = %ld, data[74] = %ld, data[78] = %ld\n", data[70], data[74], data[78]);
-	if ((400 < data[70] && data[70] < 1100) || 
-		(400 < data[74] && data[74] < 1100) ||
-		(400 < data[78] && data[78] < 1100)) {
+	if ((400 < data[70] && data[70] < 900) || 
+		(400 < data[74] && data[74] < 900) ||
+		(400 < data[78] && data[78] < 900)) {
 			_sg->Velocity(0, 0);
 			printf("전방에 장애물!\n");
 			_sg->TurnLeft();
 			//다시 직진해야되나?
 			//_sg->Velocity(20, 20);
-			Sleep(3000);
+			Sleep(4000);
 			data.clear();
 			printf("\n");
 	} else {
 		_sg->Velocity(20, 20);
 	}
 	mtx.unlock();
+	Sleep(300);		//lasesr 측정시간을 줘야하나??
 }
 
 void drawMap() {
