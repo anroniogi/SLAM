@@ -236,28 +236,21 @@ void drawMap() {
 				//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
 
 				laser[cnt].num = i;
-				laser[cnt].x = x+6000;
-				laser[cnt].y = y;
+				laser[cnt].x = x;
+				laser[cnt].y = y + 6000;
 				++cnt;
 
 				//mobile robot의 Position x, y만큼 장애물위치 이동
-				tempx = floor(x + 6000 + Position.x);
-				tempy = floor(y + Position.y);
+				tempx = floor((x + Position.x) / 50);
+				tempy = floor((y + 6000 + Position.y) / 50);
 
 				//mobile robot의 theta만큼 장애물위치 회전
-				/*
-				tempxx = (int)((tempx - Position.x)*cos(Position.theta) - (int)(tempy - Position.y)*sin(Position.theta));
-				tempyy = (int)((tempx - Position.x)*sin(Position.theta) - (int)(tempy - Position.y)*cos(Position.theta));
-				*/
-				tempxx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
-				tempyy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
-				
-				tempxx = tempxx / 50;
-				tempyy = tempyy / 50;
+				tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
+				tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
+
 
 				// 배열에 대입
-				MAP::map[tempxx][tempyy] += 1;
-				//MAP::map[tempx][tempy] += 1;
+				MAP::map[tempx][tempy] += 1;
 
 			}
 		}
