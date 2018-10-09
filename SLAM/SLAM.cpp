@@ -29,6 +29,7 @@ cv::vector<cv::Point2f> corners;
 // 레이저 변수
 qrk::Urg_driver urg;
 long time_stamp = 0;
+long time_before = 0;
 long min_distance; 	//최소거리
 long max_distance;	//최대거리
 long tempx, tempy;
@@ -134,6 +135,10 @@ void initialize(int argc, char *argv[]) {
 	landmark.y = 100;
 	landmark.theta = 0;
 
+	Position.x = 0;
+	Position.y = 0;
+	Position.theta = 0;
+
 	stellaInitialize();
 	Sleep(500);
 	laserScannerInitialize(argc, argv);
@@ -161,7 +166,7 @@ void update() {
 
 void localize(int argc, char *argv[]) {
 	//_sg->Velocity(0, 0);
-	prevPosition = Position;
+	//prevPosition = Position;
 	getPosition();
 	//getLaserData(argc, argv);
 	printf("position : %ld, %ld, %ld\n", Position.x, Position.y, Position.theta);
@@ -174,28 +179,35 @@ void localize(int argc, char *argv[]) {
 
 void move() {
 	mtx.lock();
-	printf("data[70] = %ld, data[74] = %ld, data[78] = %ld\n", data[70], data[74], data[78]);
-	if ((400 < data[70] && data[70] < 900) || 
-		(400 < data[74] && data[74] < 900) ||
-		(400 < data[78] && data[78] < 900)) {
-			_sg->Velocity(0, 0);
+	//printf("data[70] = %ld, data[74] = %ld, data[78] = %ld\n", data[70], data[74], data[78]);
+	if ((400 < data[70] && data[70] < 1000) || 
+		(400 < data[74] && data[74] < 1000) ||
+		(400 < data[78] && data[78] < 1000)) {
+		if (time_before != time_stamp && time_before == 0) {
+			//_sg->Velocity(0, 0);
 			printf("전방에 장애물!\n");
 			_sg->TurnLeft();
 			//다시 직진해야되나?
 			//_sg->Velocity(20, 20);
 			Sleep(4000);
+			Position.theta = -1.57;
 			data.clear();
+			_sg->Velocity(0, 0);
 			printf("\n");
+			_sg->Velocity(20, 20);
+			time_before = time_stamp;
+		}
 	} else {
 		_sg->Velocity(20, 20);
 	}
 	mtx.unlock();
-	Sleep(300);		//lasesr 측정시간을 줘야하나??
+	//Sleep(1000);		//lasesr 측정시간을 줘야하나??
 }
 
 void drawMap() {
 	if (Position.x > -3.0 && Position.y > -3.0) {
-		if (sqrt((Position.x - prevPosition.x) ^ 2 + (Position.y - prevPosition.y) ^ 2) > 100) {
+		if (sqrt((Position.x - prevPosition.x) ^ 2 + (Position.y - prevPosition.y) ^ 2) > 400) {
+			printf("포지션 재측정\n");
 			getPosition();
 		}
 		// bmp 파일 생성
@@ -206,40 +218,49 @@ void drawMap() {
 		fwrite(bmpinfoheader, 1, 40, pfile);
 
 		int cnt = 0;
+		int tempxx, tempyy;
 
 		size_t data_n = data.size();
-		for (size_t i = 0; i < data_n; ++i) {
-			long l = data[i];
-			if ((l <= min_distance) || (l >= max_distance)) {
-				continue;
+		if (data_n < 142) {
+			for (size_t i = 0; i < data_n; ++i) {
+				long l = data[i];
+				if ((l <= min_distance) || (l >= max_distance)) {
+					continue;
+				}
+
+
+				//laser scanner 측정위치 x,y 계산
+				double radian = urg.index2rad(i);
+				long x = static_cast<long>(l * cos(radian));
+				long y = static_cast<long>(l * sin(radian));
+				//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
+
+				laser[cnt].num = i;
+				laser[cnt].x = x+6000;
+				laser[cnt].y = y;
+				++cnt;
+
+				//mobile robot의 Position x, y만큼 장애물위치 이동
+				tempx = floor(x + 6000 + Position.x);
+				tempy = floor(y + Position.y);
+
+				//mobile robot의 theta만큼 장애물위치 회전
+				/*
+				tempxx = (int)((tempx - Position.x)*cos(Position.theta) - (int)(tempy - Position.y)*sin(Position.theta));
+				tempyy = (int)((tempx - Position.x)*sin(Position.theta) - (int)(tempy - Position.y)*cos(Position.theta));
+				*/
+				tempxx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
+				tempyy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
+				
+				tempxx = tempxx / 50;
+				tempyy = tempyy / 50;
+
+				// 배열에 대입
+				MAP::map[tempxx][tempyy] += 1;
+				//MAP::map[tempx][tempy] += 1;
+
 			}
-
-
-			//laser scanner 측정위치 x,y 계산
-			double radian = urg.index2rad(i);
-			long x = static_cast<long>(l * cos(radian));
-			long y = static_cast<long>(l * sin(radian));
-			//std::cout << i << " : (" << x << ", " << y << ")" << std::endl;
-
-			laser[cnt].num = i;
-			laser[cnt].x = x;
-			laser[cnt].y = y + 6000;
-			++cnt;
-
-			//mobile robot의 Position x, y만큼 장애물위치 이동
-			tempx = floor((x + Position.x) / 50);
-			tempy = floor((y + 6000 + Position.y) / 50);
-
-			//mobile robot의 theta만큼 장애물위치 회전
-			tempx = tempx * (cos(Position.theta)) - tempy * (sin(Position.theta));
-			tempy = tempx * (sin(Position.theta)) + tempy * (cos(Position.theta));
-
-
-			// 배열에 대입
-			MAP::map[tempx][tempy] += 1;
-
 		}
-
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if (MAP::map[i][j] == 0) {
@@ -316,7 +337,7 @@ void getPosition() {
 
 	Position.x = (ds*cos(robot_theta / 2))*10;
 	Position.y = (ds*sin(robot_theta / 2))*10;
-	Position.theta = (right - left) / (wheel_distance);
+	//Position.theta = (right - left) / (wheel_distance);
 
 #ifdef DEBUG
 	printf("\nrobot position, theta\n");
