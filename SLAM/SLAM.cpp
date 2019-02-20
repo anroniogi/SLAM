@@ -92,7 +92,8 @@ void stellaInitialize() {
 	//stella 연결
 	_rc = new CSerialPort();
 	_rc->Open("COM3", CBR_115200, 8, ONESTOPBIT, NOPARITY);
-	_rc->SetTimeout(100, 100, 10);
+	//_rc->SetTimeout(100, 100, 10);
+	_rc->SetTimeout(1, 10, 0);    // 시리얼 통신속도 설정, 타임아웃 1ms, 인터벌 0ms
 	_sg = new CStellaB1(_rc);
 
 	// 스텔라 이니셜라이즈
@@ -125,6 +126,7 @@ void laserScannerInitialize(int argc, char *argv[]) {
 void laserThread(int argc, char *argv[]) {
 	while (1) {
 		getLaserData(argc, argv);
+		Sleep(90);
 	}
 	//Sleep(100);
 }
@@ -328,8 +330,9 @@ void getPosition() {
 	robot_x = ds*cos(robot_theta / 2);
 	robot_y = ds*sin(robot_theta / 2);
 
-	Position.x = (ds*cos(robot_theta / 2))*10;
-	Position.y = (ds*sin(robot_theta / 2))*10;
+	Position.x = (ds*cos(robot_theta / 2))*10 + Position.x;
+	Position.y = (ds*sin(robot_theta / 2))*10 + Position.y;
+	Position.theta = (ds / 2) / wheel_distance + Position.theta;
 	//Position.theta = (right - left) / (wheel_distance);
 
 #ifdef DEBUG
