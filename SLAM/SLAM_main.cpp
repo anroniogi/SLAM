@@ -2,41 +2,19 @@
 
 #include "SLAM.hpp"
 
-//using namespace qrk;
-//using namespace std;
-//using namespace cv;
-
 #pragma warning (disable : 4996)
 
 
 int main(int argc, char *argv[]) {
 	
-
-	// 인준이 debug용
-	/*
-	laserScannerInitialize(argc, argv);
-	Sleep(1000);
+	stellaInitialize();
+	
 	while (1) {
 		
-		getLaserData(argc, argv);
-		findRoute();
-		Sleep(500);
-	}
-	*/
-
-
-	initialize(argc, argv);
-
-
-	while (1) {
-
-		localize(argc, argv);
+		//move(왼쪽 바퀴 속도, 오른쪽 바퀴 속도)
+		move(20, 20);
 		
-		mapping();
-		
-		move();
-		
-		//Sleep(100);
+		Sleep(1000);
 
 	}
 
